@@ -1,7 +1,94 @@
 require 'helper'
+require 'movie-renamer'
+require 'stringio'
 
 class TestMovieRenamer < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
-  end
+    
+    def setup
+       @folder = File.expand_path('temp')
+       MovieRenamer::folderPath  @folder
+       @movies = MovieRenamer::findMovies(@folder)
+       @input = StringIO.new
+       @output = StringIO.new
+       MovieRenamer::input = @input 
+       MovieRenamer::output = @output 
+    end
+
+    # test find movies
+    must "find avi movies in the folder" do
+        assert_equal %w{movie1.avi movie2.avi movie3.mkv movie4.mpg}, @movies
+        
+    end
+
+    # test read movie
+    must "create a movie object" do
+       assert_equal MovieRenamer::Movie.new('movie1.avi','','','movie1'),MovieRenamer::readMovie(@movies.first)
+    end
+
+    # simple checks that rename is done 
+    must "rename a file (and moves it) correctly" do
+        assert ! MovieRenamer::renameMovie(MovieRenamer::readMovie(@movies.first)), "file not renamed?"
+    end
+
+    # newname check
+    must "rename a movie correctly" do 
+        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous')
+        assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
+    end
+    
+    must "rename a movie correctly with parts" do 
+        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','1')
+        assert_equal "2001 - me - famous - part1.avi",MovieRenamer::newName(movie)
+    end
+
+    must "rename a movie correctly without part because part is wrong" do 
+        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','  ')
+        assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
+    end
+
+    # print movie info check
+    # XXX usless check for now
+    must "print movie info correctly" do 
+        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','1')
+        assert MovieRenamer::printMovieInfo(movie)
+
+    end
+
+    # test for ask function movie
+    must "return true on yes input" do
+        provide_input "yes\n"
+        assert MovieRenamer::ask("do you want to edit this movie")
+        expect_output "do you want to edit this movie\n"
+    end
+    
+    must "return false on no input" do
+        provide_input "no\n"
+        assert ! MovieRenamer::ask("do you want to edit this movie")
+        expect_output "do you want to edit this movie\n"
+    end
+
+    # test input sanitize
+    must "sanitize input correctly" do
+        input = "very bad movie{}\@# son"
+        assert_equal "very bad movie son", MovieRenamer::sanitizeInput(input)
+    end
+
+    # test edit movie
+    must "edit a movie correctly" do 
+        provide_input "yes\nno\n1984\nOrwell James\nBig Brother\n\nyes\n"
+        assert MovieRenamer::editMovie(@movies.first)
+        #expect_output("wow")
+    end
+
+
+    # helpers
+    def provide_input (string)
+        @input << string
+        @input.rewind
+    end
+
+    def expect_output(string)
+        assert_equal string, @output.string
+    end
+
 end
