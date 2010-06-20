@@ -6,12 +6,13 @@ class TestMovieRenamer < Test::Unit::TestCase
     
     def setup
        @folder = File.expand_path('temp')
-       MovieRenamer::folderPath  @folder
+       MovieRenamer::folderPath =  @folder
        @movies = MovieRenamer::findMovies(@folder)
        @input = StringIO.new
        @output = StringIO.new
        MovieRenamer::input = @input 
        MovieRenamer::output = @output 
+       MovieRenamer::is_a_test = true 
     end
 
     # test find movies
@@ -69,17 +70,34 @@ class TestMovieRenamer < Test::Unit::TestCase
 
     # test input sanitize
     must "sanitize input correctly" do
-        input = "very bad movie{}\@# son"
+        input = "very bad movie{}\@# son     "
         assert_equal "very bad movie son", MovieRenamer::sanitizeInput(input)
     end
 
     # test edit movie
     must "edit a movie correctly" do 
-        provide_input "yes\nno\n1984\nOrwell James\nBig Brother\n\nyes\n"
-        assert MovieRenamer::editMovie(@movies.first)
+        provide_input "yes\n1984\nOrwell James\nBig Brother\n\nyes\n"
+        assert ! MovieRenamer::editMovie(@movies.first)
+    end
+
+    must "edit a movie correctly testing recursion" do 
+        provide_input "yes\n1984\nOrwell James\nBig Brother\n\nno\nyes\n1984\nOrwell James\nBig Brother\n1\nyes\n"
+        assert ! MovieRenamer::editMovie(@movies.first)
         #expect_output("wow")
     end
 
+
+    # test main loop over folder
+    must "ask for all movies in folder" do
+       provide_input "no\nno\nno\nno\n" 
+       assert MovieRenamer::folderLoop()
+    end
+    
+    # suggest movies XXX no test here
+    must "suggest a movie list from a movie title" do
+        MovieRenamer::suggestMovies("Kill Bill")
+        #expect_output "wow"
+    end
 
     # helpers
     def provide_input (string)
@@ -92,3 +110,4 @@ class TestMovieRenamer < Test::Unit::TestCase
     end
 
 end
+

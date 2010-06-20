@@ -10,6 +10,8 @@ begin
     gem.email = "thamayor@gmail.com"
     gem.homepage = "http://github.com/ghedamat/movie-renamer"
     gem.authors = ["ghedamat"]
+    gem.files = FileList["A-Z]*", "{bin,lib,test}/**/*",]
+    gem.add_dependency 'imdb'
     #gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

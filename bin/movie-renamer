@@ -1,0 +1,70 @@
+#!/usr/bin/ruby
+
+require File.join(File.dirname(__FILE__),'..','lib','movie-renamer')
+require 'optparse'
+
+options = {}
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: #{File.basename($0)} [opts] <name>\nOnly one options each run\nDefault behavior is -f on current working directory"
+
+    opts.on("-h","--help","Display this help") do
+        puts opts
+        exit 0
+    end
+
+    opts.on("-i","--imdb","Executes a query on imdb on <movie name>") do
+        options[:imdb] = true
+    end
+
+    opts.on("-s","--singlemovie","Acts on a single movie file <file name>") do
+        options[:single] = true
+    end
+
+    opts.on("-f","--folder","Acts on whole folder <folder>") do
+        options[:folder] = true
+    end
+
+    begin
+        opts.parse!(ARGV)
+    rescue OptionParser::ParseError => 
+        warn.message
+        puts opts
+        exit 1
+    end
+        
+end
+
+if options.empty?
+    options[:folder] = true
+end
+
+name = ARGV.join(' ')
+
+if options.length != 1
+    puts "Usage: #{File.basename($0)} [opts] <name>\nOnly one options each run\nDefault behavior is -f on current working directory"
+end
+
+
+
+if options[:folder] 
+    if name
+        MovieRenamer::folderPath = File.expand_path(name)
+    else
+        Movierenamer::folderPath = Dir.pwd 
+    end
+    MovieRenamer::folderLoop()
+elsif options[:single]
+    if name && File.file?(name)
+       MovieRenamer::folderPath = File.dirname(File.expand_path(name)) 
+       MovieRenamer::editMovie(name)
+    else
+        puts "Usage: #{File.basename($0)} -s <filename>"
+        exit 1
+    end
+
+elsif options[:imdb]
+    MovieRenamer::suggestMovies(name)
+end
+
+exit 0
