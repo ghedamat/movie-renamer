@@ -18,7 +18,7 @@ module MovieRenamer
     class Movie
         
         def initialize(filename,opts={})
-            opts = { year: '', director: '', title: '', part: '', imdb: ''}.merge(opts)
+            opts = { :year => '', :director => '', :title => '', :part => '', :imdb =>''}.merge(opts)
             @year = opts[:year] 
             @director = opts[:director]
             @title = opts[:title]
