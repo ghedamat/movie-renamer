@@ -1,7 +1,4 @@
 #!/usr/bin/ruby
-#
-#
-#
 
 require 'imdb'
 
@@ -20,12 +17,13 @@ module MovieRenamer
 
     class Movie
         
-        def initialize(filename,year = '',director = '',title = '',part = '',imdb = nil)
-            @year = year
-            @director = director
-            @title = title
-            @part = part
-            @imdb = imdb
+        def initialize(filename,opts={})
+            opts = { year: '', director: '', title: '', part: '', imdb: ''}.merge(opts)
+            @year = opts[:year] 
+            @director = opts[:director]
+            @title = opts[:title]
+            @part = opts[:part]
+            @imdb = opts[:imdb]
             @filename = filename
         end
 
@@ -79,7 +77,7 @@ module MovieRenamer
         # TODO insert logic here
         filename = File.basename(filename)
         title = File.basename(filename,'.*')
-        return Movie.new(filename,'','', title)
+        return Movie.new(filename,:title => title)
     end
 
     # rename a movie according to movie data 

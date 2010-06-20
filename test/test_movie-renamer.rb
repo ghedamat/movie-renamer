@@ -1,5 +1,5 @@
 require 'helper'
-require 'movie-renamer'
+require File.join(File.dirname(__FILE__),'..', 'lib','movie-renamer')
 require 'stringio'
 
 class TestMovieRenamer < Test::Unit::TestCase
@@ -23,7 +23,7 @@ class TestMovieRenamer < Test::Unit::TestCase
 
     # test read movie
     must "create a movie object" do
-       assert_equal MovieRenamer::Movie.new('movie1.avi','','','movie1'),MovieRenamer::readMovie(@movies.first)
+       assert_equal MovieRenamer::Movie.new('movie1.avi',title: 'movie1'),MovieRenamer::readMovie(@movies.first)
     end
 
     # simple checks that rename is done 
@@ -33,24 +33,24 @@ class TestMovieRenamer < Test::Unit::TestCase
 
     # newname check
     must "rename a movie correctly" do 
-        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous')
+        movie = MovieRenamer::Movie.new 'movie1.avi', year: '2001' , director: 'me', title: 'famous'
         assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
     end
     
     must "rename a movie correctly with parts" do 
-        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','1')
+        movie = MovieRenamer::Movie.new 'movie1.avi', year: '2001' , director: 'me', title: 'famous', part: '1'
         assert_equal "2001 - me - famous - part1.avi",MovieRenamer::newName(movie)
     end
 
     must "rename a movie correctly without part because part is wrong" do 
-        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','  ')
+        movie = MovieRenamer::Movie.new 'movie1.avi', year: '2001' , director: 'me', title: 'famous', part: '    '
         assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
     end
 
     # print movie info check
     # XXX usless check for now
     must "print movie info correctly" do 
-        movie = MovieRenamer::Movie.new('movie1.avi','2001','me','famous','1')
+        movie = MovieRenamer::Movie.new 'movie1.avi', year: '2001' , director: 'me', title: 'famous'
         assert MovieRenamer::printMovieInfo(movie)
 
     end
