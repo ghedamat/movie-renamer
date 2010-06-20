@@ -1,6 +1,8 @@
 = movie-renamer
 
-Description goes here.
+A simple command line interface to rename movies in a folder
+
+wait for a deeper description
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +16,15 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 tha. See LICENSE for details.
+Copyright (c) 2010 ghedamat. See LICENSE for details.
+
+Feel free to send me suggestions :)
+
+Thanks again to the rtmapi guys, and sorry for my bad fixies :P
+
+Mail me at: thamayor [at] gmail [dot] com
+
+
+
+
+
