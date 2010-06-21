@@ -238,7 +238,7 @@ module MovieRenamer
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(name)
         s = Imdb::Search.new(name) 
-        s.movies.each do |m|
+        s.movies[0..5].each do |m|
             @output.puts "#{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
         end
     end
