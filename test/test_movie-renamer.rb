@@ -25,7 +25,16 @@ class TestMovieRenamer < Test::Unit::TestCase
     must "create a movie object" do
        assert_equal MovieRenamer::Movie.new('movie1.avi',title: 'movie1'),MovieRenamer::readMovie(@movies.first)
     end
-
+    
+    # test title extraction
+    must "extract a title correctly with bad words in filename" do
+    ['DIvX-ITa Kill Bill Vol. 2','(Divx-Ita )Kill Bill Vol. 2',
+    'Divx- ita Kill Bill Vol. 2',
+    '[Divx-Ita ]Kill Bill Vol. 2','Kill Bill Vol. 2 [divx - Ita ]'].each do |name|
+        assert_equal "Kill Bill Vol. 2", MovieRenamer::titleExtract(name)
+    end
+    end
+    
     # simple checks that rename is done 
     must "rename a file (and moves it) correctly" do
         assert ! MovieRenamer::renameMovie(MovieRenamer::readMovie(@movies.first)), "file not renamed?"
@@ -70,8 +79,8 @@ class TestMovieRenamer < Test::Unit::TestCase
 
     # test input sanitize
     must "sanitize input correctly" do
-        input = "very bad movie{}\@# son     "
-        assert_equal "very bad movie son", MovieRenamer::sanitizeInput(input)
+        input = "ain't a very bad movie{}\@# son     "
+        assert_equal "ain't a very bad movie son", MovieRenamer::sanitizeInput(input)
     end
 
     # test edit movie

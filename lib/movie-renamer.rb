@@ -76,8 +76,14 @@ module MovieRenamer
     def MovieRenamer::readMovie(filename)
         # TODO insert logic here
         filename = File.basename(filename)
-        title = File.basename(filename,'.*')
+        title =MovieRenamer::titleExtract(File.basename(filename,'.*'))
         return Movie.new(filename,:title => title)
+    end
+
+    # attempt to remove the divx part from a filename
+    def MovieRenamer::titleExtract(filename)
+        r = %r{\s*\[?\(?\s*(d|D)(i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
+        filename.gsub(r,'')
     end
 
     # rename a movie according to movie data 
@@ -161,7 +167,7 @@ module MovieRenamer
         end
     end
 
-
+    # yes or no questioner
     def MovieRenamer::ask(question)
         @output.puts question
         response = @input.gets.chomp
@@ -176,6 +182,7 @@ module MovieRenamer
         end
     end
 
+    # yes no quit info play questioner
     def MovieRenamer::askMore(question)
         @output.puts question
         response = @input.gets.chomp
@@ -219,11 +226,13 @@ module MovieRenamer
         return s
     end
 
-
+    
+    # LIMITS the set of chars that can be used in movie names
+    # just 'cause we love shell and we know how painful those chars can be :P 
     def MovieRenamer::sanitizeInput(input)
         # XXX naive sanitize
         # simply removing all non standard characters
-        input.gsub(/[^A-Za-z0-9\_\-\s]/,'').chomp.sub(/ +$/,'')
+        input.gsub(/[^A-Za-z0-9\_\-\s']/,'').gsub(/\s+/,' ').chomp.sub(/ +$/,'')
     end
 
     # makes a query to imdb database
