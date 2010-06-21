@@ -29,7 +29,7 @@ class TestMovieRenamer < Test::Unit::TestCase
     # test title extraction
     must "extract a title correctly with bad words in filename" do
     ['DIvX-ITa Kill Bill Vol. 2','(Divx-Ita )Kill Bill Vol. 2',
-    'Divx- ita Kill Bill Vol. 2',
+    'Divx- ita Kill Bill Vol. 2','(Divx - ita) - Kill Bill Vol. 2',
     '[Divx-Ita ]Kill Bill Vol. 2','Kill Bill Vol. 2 [divx - Ita ]'].each do |name|
         assert_equal "Kill Bill Vol. 2", MovieRenamer::titleExtract(name)
     end
