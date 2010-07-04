@@ -82,8 +82,11 @@ module MovieRenamer
 
     # attempt to remove the divx part from a filename
     def MovieRenamer::titleExtract(filename)
-        r = %r{\s*\[?\(?\s*(d|D)(i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
-        filename.gsub(r,'').gsub(/\s?(-|_)\s?/,'')
+        r1 = %r{\s*\[?\(?\s*(d|D)(i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
+        r2 = %r{\s*\[?\(?\s*(x|X)(v|V)(i|I)(d|D)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
+        r3 = %r{\s*\[?\(?\s*(d|D)(v|V)(d|D)(r|R)(i|I)(p|P)\s?(-|_)?\s*\)?\]?\s*}
+        r = /(#{r1}|#{r2}|#{r3})/
+        filename.gsub(r,'').gsub(/\s?(-|_)\s?/,' ').gsub(/^\s/,'')
     end
 
     # rename a movie according to movie data 
