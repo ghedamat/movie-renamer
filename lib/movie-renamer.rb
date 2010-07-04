@@ -9,7 +9,7 @@ module MovieRenamer
     @folderpath = '' 
     @is_a_test = false
     RENAMEPATTERN = ''
-    MOVIEPATTERN = %r{\.((avi)|(mkv)|(mpg))$} 
+    MOVIEPATTERN = %r{\.((avi|AVI)|(mkv|MKV)|(mpg|MPG|mpeg|MPEG))$} 
     @input = STDIN
     @output = STDOUT
 
