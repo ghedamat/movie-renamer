@@ -5,17 +5,29 @@ A simple command line interface to rename movies in a folder
 
 Uses imdb gem to query imdb about current movie trying to obtain useful infos
 
-play function is going to be added...
-
 to see the usage type
 
-$movie-renamer -h
+$ movie-renamer -h
+
+== How it works
+
+Default behavior is to scan the current working directory
+For each movie in the folder a question about what to do is asked.
+
+Then movie is renamed using input provided by the user
+
+Each renamed movie is moved into a tmp/ subfolder of the current working directory.
+Movies are renamed like this:
+
+YEAR - DIRECTOR - TITLE - optionalPART.extension
+
+There are plans to add the rename pattern like an optional parameter
 
 
-wait for a deeper description
+
 
 == Note on Patches/Pull Requests
- 
+You are encouraged to provide help in developing this simple but useful (I hope) application! 
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
@@ -29,7 +41,6 @@ wait for a deeper description
 Copyright (c) 2010 ghedamat. See LICENSE for details.
 
 Feel free to send me suggestions :)
-
 Please drop me a line if you find this useful
 
 Mail me at: thamayor [at] gmail [dot] com
