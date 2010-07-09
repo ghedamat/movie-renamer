@@ -1,6 +1,11 @@
 #!/usr/bin/ruby
 
-require 'imdb'
+begin
+    require 'imdb'
+rescue LoadError
+    $stderr.print "#{File.basename($0)} requires imdb gem to work\nPlease install it with gem install imdb\n"
+    exit
+end
 
 module MovieRenamer
     
