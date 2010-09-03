@@ -1,10 +1,28 @@
 #!/usr/bin/ruby
 
 require 'imdb'
+require 'highline'
+require 'highline/import'
+=begin
+require 'yaml'
+
+
+CONFIGFILE = File.join(File.expand_path(ENV['HOME'], '.movie-renamer'))
+begin 
+    $config = YAML.load_file(CONFIGFILE)
+rescue
+    raise "\nplease create a .movie-renamer file in your $HOME
+example:
+moviesdir: /path/to/your/movies/dir"
+exit
+end
+=end
+
+
 
 module MovieRenamer
     
-    NEWPATH = 'tmp'
+    @newpath = 'tmp'
     # TODO insert default
     @folderpath = '' 
     @is_a_test = false
@@ -12,7 +30,6 @@ module MovieRenamer
     MOVIEPATTERN = %r{\.((avi|AVI)|(mkv|MKV)|(mpg|MPG|mpeg|MPEG))$} 
     @input = STDIN
     @output = STDOUT
-
 
 
     class Movie
@@ -44,6 +61,9 @@ module MovieRenamer
         @folderpath = folderpath
     end
 
+    def MovieRenamer::newpath=(newpath)
+        @newpath = newpath
+    end
 
     #test helpers
     def MovieRenamer::input=(input)
@@ -82,7 +102,7 @@ module MovieRenamer
 
     # attempt to remove the divx part from a filename
     def MovieRenamer::titleExtract(filename)
-        r1 = %r{\s*\[?\(?\s*(d|D)(i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
+        r1 = %r{\s*\[?\(?\s*[dD](i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
         r2 = %r{\s*\[?\(?\s*(x|X)(v|V)(i|I)(d|D)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
         r3 = %r{\s*\[?\(?\s*(d|D)(v|V)(d|D)(r|R)(i|I)(p|P)\s?(-|_)?\s*\)?\]?\s*}
         r = /(#{r1}|#{r2}|#{r3})/
@@ -91,9 +111,9 @@ module MovieRenamer
 
     # rename a movie according to movie data 
     # and moves it to the new path in filesystem 
-    def MovieRenamer::renameMovie(movie,newpath = NEWPATH)
+    def MovieRenamer::renameMovie(movie,newpath = @newpath)
         filename = MovieRenamer::newName(movie)
-        path = File.join(@folderpath,newpath)
+        path = File.expand_path(newpath)
         unless File.exist?(path)
             Dir.mkdir(path)   
         end
@@ -122,11 +142,11 @@ module MovieRenamer
     def MovieRenamer::editMovie(filename)
        movie = MovieRenamer::readMovie(filename)  
        MovieRenamer::printMovieInfo(movie)
-       ans = askMore "would you like to edit this movie? [ yes, no, quit, info , play] "
+       ans = askMore "would you like to edit this movie? [ Yes, No, Quit, Info]"# , play] "
        if ans 
-           if ans == 'info'
-             MovieRenamer::suggestMovies(movie.title) 
-           elsif ans == 'play'
+           if ans == :info
+             MovieRenamer::suggestMovies(movie) 
+           elsif ans == :play
              MovieRenamer::playMovie(movie) 
            end
            #if ask "play movie with mplayer?" 
@@ -134,23 +154,28 @@ module MovieRenamer
            #end
 
            # TODO insert imdb suggestions here?
-           
-           @output.puts "Enter a year"
-           movie.year = @input.gets.chomp.to_i
+          
+          puts movie.inspect
+           if movie.year == ''
+               @output.puts "Enter a year"
+               movie.year = @input.gets.chomp.to_i
 
-           @output.puts "Enter a director"
-           movie.director = MovieRenamer::sanitizeInput(@input.gets.chomp)
+               @output.puts "Enter a director"
+               movie.director = MovieRenamer::sanitizeInput(@input.gets.chomp)
 
-           @output.puts "Enter a title"
-           movie.title = MovieRenamer::sanitizeInput(@input.gets.chomp)
+               @output.puts "Enter a title"
+               movie.title = MovieRenamer::sanitizeInput(@input.gets.chomp)
 
-           @output.puts "Enter a part (you can leave this blank)"
-           movie.part = MovieRenamer::sanitizeInput(@input.gets.chomp)
-            
+               @output.puts "Enter a part (you can leave this blank)"
+               movie.part = MovieRenamer::sanitizeInput(@input.gets.chomp)
+           end
 
            MovieRenamer::printMovieInfo(movie)
 
-           if ask "is this information correct" 
+           ans = ask("is this information correct: Yes, No") do |q|
+                q.validate = /^y(es)?|^n(o)?/
+           end
+           if ans =~/^y(es)?/
                return MovieRenamer::renameMovie(movie)
                #return true
            else
@@ -170,6 +195,7 @@ module MovieRenamer
         end
     end
 
+=begin
     # yes or no questioner
     def MovieRenamer::ask(question)
         @output.puts question
@@ -181,9 +207,10 @@ module MovieRenamer
             false
         else 
             puts "I don't understand. Please retry"
-            ask(question)
+            MovieRenamer::ask(question)
         end
     end
+=end
 
     # yes no quit info play questioner
     def MovieRenamer::askMore(question)
@@ -197,9 +224,9 @@ module MovieRenamer
         when /^q(uit)?$/i
             exit 0
         when /^i(nfo)?$/i
-            return "info"
+            return :info
         when /^p(lay)?$/i
-            return "play"
+            return :play
         else 
             puts "I don't understand. Please retry"
             askMore(question)
@@ -207,15 +234,15 @@ module MovieRenamer
     end
 
     def MovieRenamer::printMovieInfo(movie)
-        s = "Movie info is:\n"
-        s+= "@oldfilename: #{movie.filename}\n"
-        s+= "@year: #{movie.year}\n"
-        s+= "@director: #{movie.director}\n"
-        s+= "@title: #{movie.title}\n"
-        s+= "@part: #{movie.part}\n"
-        s+= "New filename = #{MovieRenamer::newName(movie)}\n"
-        @output.puts s
-        return s
+        say("Movie info is:
+<%= color('old filename:', :red) %> #{movie.filename}
+<%= color('year:', :red) %> #{movie.year}
+<%= color('director:', :red) %> #{movie.director}
+<%= color('title:', :red) %> #{movie.title}
+<%= color('part:', :red) %> #{movie.part}
+<%= color('filename:', :red) %> #{MovieRenamer::newName(movie)}")
+        #@output.puts s
+        #return s
     end
 
     # calculates new movie name based on a pattern? XXX
@@ -239,11 +266,24 @@ module MovieRenamer
     end
 
     # makes a query to imdb database
-    def MovieRenamer::suggestMovies(name)
-        s = Imdb::Search.new(name) 
-        s.movies[0..5].each do |m|
-            @output.puts "#{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
+    def MovieRenamer::suggestMovies(movie)
+        s = Imdb::Search.new(movie.title) 
+        s.movies[0..4].each_with_index do |m,i|
+            @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
         end
+        cmd = ask("pick a choice [0..4], Manual search, Edit Manually", %w{0 1 2 3 4 m e}) do |q|
+            q.readline = true
+        end
+        if %w{0 1 2 3 4}.include?(cmd)
+            m = s.movies[cmd.to_i]
+            movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\)/,'')
+            movie.year = m.year
+            movie.director = m.director.to_s.gsub(/(\[")|("\])/,'')
+        elsif cmd == "m" 
+            movie.title = ask("enter title")
+            MovieRenamer::suggestMovies(movie )
+        end
+        return movie
     end
 
     # TODO output string variable

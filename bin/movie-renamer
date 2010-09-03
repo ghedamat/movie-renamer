@@ -6,7 +6,7 @@ require 'optparse'
 options = {}
 
 OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($0)} [opts] <name>\nOnly one options each run\nDefault behavior is -f on current working directory"
+    opts.banner = "Usage: #{File.basename($0)} [-i|-s|-f|-h] <name>\nDefault behavior is -f on current working directory"
 
     opts.on("-h","--help","Display this help") do
         puts opts
@@ -17,12 +17,16 @@ OptionParser.new do |opts|
         options[:imdb] = true
     end
 
-    opts.on("-s","--singlemovie","Acts on a single movie file <file name>") do
-        options[:single] = true
+    opts.on("-s","--singlemovie FILE","Acts on a single movie file <file name>") do |f|
+        options[:single] = f
     end
 
-    opts.on("-f","--folder","Acts on whole folder <folder>") do
-        options[:folder] = true
+    opts.on("-f","--folder FOLDER","Acts on whole folder <folder>") do |f|
+        options[:folder] = f
+    end
+    
+    opts.on("-p","--path PATH", "path for moving renamed movies default is tmp/ in current working directory ") do |p|
+        options[:path] = p
     end
 
     begin
@@ -35,25 +39,22 @@ OptionParser.new do |opts|
         
 end
 
-if options.empty?
-    options[:folder] = true
-end
-
 name = ARGV.join(' ')
 
+=begin
 if options.length != 1
     puts "Usage: #{File.basename($0)} [opts] <name>\nOnly one options each run\nDefault behavior is -f on current working directory"
 end
+=end
 
-
+if options[:path] 
+    MovieRenamer::newpath = options[:path]
+end
 
 if options[:folder] 
-    if name
-        MovieRenamer::folderPath = File.expand_path(name)
-    else
-        Movierenamer::folderPath = Dir.pwd 
-    end
+    MovieRenamer::folderPath = File.expand_path(options[:folder])
     MovieRenamer::folderLoop()
+    exit 0
 elsif options[:single]
     if name && File.file?(name)
        MovieRenamer::folderPath = File.dirname(File.expand_path(name)) 
@@ -62,9 +63,18 @@ elsif options[:single]
         puts "Usage: #{File.basename($0)} -s <filename>"
         exit 1
     end
+    exit 0
 
 elsif options[:imdb]
     MovieRenamer::suggestMovies(name)
+    exit 0
+elsif name
+    MovieRenamer::folderPath = File.expand_path(name)
+    MovieRenamer::folderLoop()
+    exit 0
+else
+    Movierenamer::folderPath = Dir.pwd 
+    MovieRenamer::folderLoop()
+    exit 0
 end
 
-exit 0

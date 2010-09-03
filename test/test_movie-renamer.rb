@@ -58,6 +58,7 @@ class TestMovieRenamer < Test::Unit::TestCase
         assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
     end
 
+=begin
     # print movie info check
     # XXX usless check for now
     must "print movie info correctly" do 
@@ -78,14 +79,7 @@ class TestMovieRenamer < Test::Unit::TestCase
         assert ! MovieRenamer::ask("do you want to edit this movie")
         expect_output "do you want to edit this movie\n"
     end
-
-    # test input sanitize
-    must "sanitize input correctly" do
-        input = "ain't a very bad movie{}\@# son     "
-        assert_equal "ain't a very bad movie son", MovieRenamer::sanitizeInput(input)
-    end
-
-    # test edit movie
+     # test edit movie
     must "edit a movie correctly" do 
         provide_input "yes\n1984\nOrwell James\nBig Brother\n\nyes\n"
         assert ! MovieRenamer::editMovie(@movies.first)
@@ -97,7 +91,16 @@ class TestMovieRenamer < Test::Unit::TestCase
         #expect_output("wow")
     end
 
+=end
+    # test input sanitize
+    must "sanitize input correctly" do
+        input = "ain't a very bad movie{}\@# son     "
+        assert_equal "ain't a very bad movie son", MovieRenamer::sanitizeInput(input)
+    end
 
+   
+
+=begin
     # test main loop over folder
     must "ask for all movies in folder" do
        provide_input "no\nno\nno\nno\n" 
@@ -109,6 +112,7 @@ class TestMovieRenamer < Test::Unit::TestCase
         MovieRenamer::suggestMovies("Kill Bill")
         #expect_output "wow"
     end
+=end
 
     # helpers
     def provide_input (string)
