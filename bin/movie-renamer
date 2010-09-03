@@ -56,9 +56,9 @@ if options[:folder]
     MovieRenamer::folderLoop()
     exit 0
 elsif options[:single]
-    if name && File.file?(name)
-       MovieRenamer::folderPath = File.dirname(File.expand_path(name)) 
-       MovieRenamer::editMovie(name)
+    if File.file?(File.expand_path(options[:single]))
+       MovieRenamer::folderPath = File.dirname(File.expand_path(options[:single])) 
+       MovieRenamer::editMovie(options[:single])
     else
         puts "Usage: #{File.basename($0)} -s <filename>"
         exit 1
