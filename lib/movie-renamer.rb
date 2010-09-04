@@ -3,20 +3,20 @@
 require 'imdb'
 require 'highline'
 require 'highline/import'
-=begin
 require 'yaml'
 
-
-CONFIGFILE = File.join(File.expand_path(ENV['HOME'], '.movie-renamer'))
+$config = ''
+CONFIGFILE = File.join(File.expand_path(ENV['HOME']), '.movie-renamer')
 begin 
     $config = YAML.load_file(CONFIGFILE)
 rescue
+=begin
     raise "\nplease create a .movie-renamer file in your $HOME
 example:
-moviesdir: /path/to/your/movies/dir"
+filename: /path/to/your/movies/dir"
 exit
-end
 =end
+end
 
 
 
@@ -26,11 +26,14 @@ module MovieRenamer
     # TODO insert default
     @folderpath = '' 
     @is_a_test = false
-    RENAMEPATTERN = ''
+    @renamepattern = '$year - $director - $title'
     MOVIEPATTERN = %r{\.((avi|AVI)|(mkv|MKV)|(mpg|MPG|mpeg|MPEG))$} 
     @input = STDIN
     @output = STDOUT
-
+    
+    if $config['filename']
+        @renamepattern = $config['filename']
+    end
 
     class Movie
         
@@ -155,7 +158,6 @@ module MovieRenamer
 
            # TODO insert imdb suggestions here?
           
-          puts movie.inspect
            if movie.year == ''
                @output.puts "Enter a year"
                movie.year = @input.gets.chomp.to_i
@@ -248,7 +250,8 @@ module MovieRenamer
     # calculates new movie name based on a pattern? XXX
     # TODO change this and include a globalpattern
     def MovieRenamer::newName(movie)
-        s = "#{movie.year} - #{movie.director} - #{movie.title}"        
+        @renamepattern.gsub!(/\$[a-z]*/) { |m| ;'#{movie.'+m.sub(/\$/,'').chomp+'}' }
+        s = eval( '"' + @renamepattern + '"')
         if movie.part =~ /\w/
             s+= " - part#{movie.part.to_i}"
         end

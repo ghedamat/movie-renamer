@@ -6,7 +6,7 @@ require 'optparse'
 options = {}
 
 OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($0)} [-i|-s|-f|-h] <name>\nDefault behavior is -f on current working directory"
+    opts.banner = "Usage: #{File.basename($0)} [-i|-s|-f|-h|-p] <folder>\nDefault behavior is -f on current working directory"
 
     opts.on("-h","--help","Display this help") do
         puts opts
