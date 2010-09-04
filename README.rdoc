@@ -18,7 +18,6 @@ Default behavior is -f on current working directory
     -p, --path PATH                  path for moving renamed movies default is tmp/ in current working directory 
 
 
-
 == How it works
 
 Default behavior is to scan the current working directory
