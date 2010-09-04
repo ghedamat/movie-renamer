@@ -10,7 +10,7 @@ to see the usage type
 
 $ movie-renamer -h
 Usage: movie-renamer [-i|-s|-f|-h|-p] <folder>
-Default behavior is -f on current working directory
+    Default behavior is -f on current working directory
     -h, --help                       Display this help
     -i, --imdb                       Executes a query on imdb on <movie name>
     -s, --singlemovie FILE           Acts on a single movie file <file name>
@@ -20,17 +20,19 @@ Default behavior is -f on current working directory
 
 == How it works
 
-Default behavior is to scan the current working directory
+Default behavior is to scan the current working directory.
 For each movie in the folder a question about what to do is asked.
 
-Then movie is renamed using input provided by the user
+Then movie is renamed using input provided by the user.
 You can query imdb using the filename or enter use manual search
 
 Each renamed movie is moved into a tmp/ subfolder of the current working directory or 
 in the folder specified with the -p option
 
 By default Movies are renamed like this:
+
 $year - $director - $title partXX.file_extension
+
 You can set the rename pattern creating a .movie-renamer file in your home
 
 example:
