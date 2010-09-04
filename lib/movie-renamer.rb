@@ -273,7 +273,13 @@ module MovieRenamer
         # simply removing all non standard characters
         input.gsub(/[^A-Za-z0-9\_\-\s']/,'').gsub(/\s+/,' ').chomp.sub(/ +$/,'')
     end
-
+    
+    def MovieRenamer::imdbLookup(name)
+        s = Imdb::Search.new(name) 
+        s.movies[0..4].each_with_index do |m,i|
+            @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
+        end
+    end
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(movie)
         s = Imdb::Search.new(movie.title) 
@@ -285,7 +291,7 @@ module MovieRenamer
         end
         if %w{0 1 2 3 4}.include?(cmd)
             m = s.movies[cmd.to_i]
-            movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\)/,'')
+            movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\)/,'').gsub(/\saka\s.*/,'') # aka removes other lang from title
             movie.year = m.year
             movie.director = m.director.to_s.gsub(/(\[")|("\])/,'')
         elsif cmd == "m" 
