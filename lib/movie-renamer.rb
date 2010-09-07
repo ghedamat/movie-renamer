@@ -3,6 +3,7 @@
 require 'imdb'
 require 'highline'
 require 'highline/import'
+require 'htmlentities'
 require 'yaml'
 
 $config = ''
@@ -18,12 +19,30 @@ exit
 =end
 end
 
-
 begin
     require 'imdb'
 rescue LoadError
     $stderr.print "#{File.basename($0)} requires imdb gem to work\nPlease install it with gem install imdb\n"
     exit
+end
+
+
+if $config['language']
+    $language = $config['language']
+else
+    $language = 'com'
+end
+# MonkeyPatching is bad..
+module Imdb
+    
+    class Search
+        class << self
+            def query(query)
+                open("http://www.imdb.#{$language}/find?q=#{CGI::escape(query)};s=tt")
+            end
+        end
+    end
+
 end
 
 module MovieRenamer
@@ -282,22 +301,25 @@ module MovieRenamer
     
     def MovieRenamer::imdbLookup(name)
         s = Imdb::Search.new(name) 
+        coder = HTMLEntities.new
         s.movies[0..4].each_with_index do |m,i|
+            m.title = coder.decode(m.title)#.encode("iso-8859-1")
             @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
         end
     end
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(movie)
+        coder = HTMLEntities.new
         s = Imdb::Search.new(movie.title) 
         s.movies[0..4].each_with_index do |m,i|
+            m.title = coder.decode(m.title)#.encode("iso-8859-1")
             @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
         end
         mt = s.movies[0..4]
-        
-        cmd = ask("pick a choice [0..#{(mt.length) -1 }], Manual search, Edit manually, Skip Movie, Quit", ((0...mt.length).to_a << %w{m e s q}).flatten) 
-        if (0..mt.length).to_a.include?(cmd)
+        cmd = ask("pick a choice [0..#{(mt.length) -1 }], Manual search, Edit manually, Skip Movie, Quit", ((0...mt.length).to_a.map{ |e| e.to_s} << %w{m e s q}).flatten) 
+        if (0..mt.length).to_a.map{|e| e.to_s}.include?(cmd)
             m = s.movies[cmd.to_i]
-            movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\)/,'').gsub(/\saka\s.*/,'') # aka removes other lang from title
+            movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\).*/,'')#.gsub(/\saka\s.*/,'') # aka removes other lang from title
             movie.year = m.year
             movie.director = m.director.to_s.gsub(/(\[")|("\])/,'')
         elsif cmd == "m" 
