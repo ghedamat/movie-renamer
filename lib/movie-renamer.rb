@@ -151,18 +151,24 @@ module MovieRenamer
     def MovieRenamer::editMovie(filename)
        movie = MovieRenamer::readMovie(filename)  
        MovieRenamer::printMovieInfo(movie)
-       ans = askMore "would you like to edit this movie? [ Yes, No, Quit, Info]"# , play] "
+       ans = askMore "would you like to edit this movie? [ Yes, Skip movie, Quit, Imdb lookup]"# , play] "
        if ans 
            if ans == :info
-             MovieRenamer::suggestMovies(movie) 
+             ret = MovieRenamer::suggestMovies(movie) 
+             if ret.class == nil
+               return true  
+             end
            elsif ans == :play
              MovieRenamer::playMovie(movie) 
            end
+
+
            #if ask "play movie with mplayer?" 
            #     MovieRenamer::playMovie(movie) 
            #end
 
            # TODO insert imdb suggestions here?
+
           
            if movie.year == ''
                @output.puts "Enter a year"
@@ -227,11 +233,11 @@ module MovieRenamer
         case response
         when /^y(es)?$/i
             true
-        when /^no?$/i
+        when /^s(kip)?$/i
             false
         when /^q(uit)?$/i
             exit 0
-        when /^i(nfo)?$/i
+        when /^i(mdb)?$/i
             return :info
         when /^p(lay)?$/i
             return :play
@@ -286,10 +292,10 @@ module MovieRenamer
         s.movies[0..4].each_with_index do |m,i|
             @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
         end
-        cmd = ask("pick a choice [0..4], Manual search, Edit Manually", %w{0 1 2 3 4 m e}) do |q|
-            q.readline = true
-        end
-        if %w{0 1 2 3 4}.include?(cmd)
+        mt = s.movies[0..4]
+        
+        cmd = ask("pick a choice [0..#{(mt.length) -1 }], Manual search, Edit manually, Skip Movie, Quit", ((0...mt.length).to_a << %w{m e s q}).flatten) 
+        if (0..mt.length).to_a.include?(cmd)
             m = s.movies[cmd.to_i]
             movie.title = m.title.gsub(/     .*/,'').gsub(/\s*\([0-9]+\)/,'').gsub(/\saka\s.*/,'') # aka removes other lang from title
             movie.year = m.year
@@ -297,6 +303,10 @@ module MovieRenamer
         elsif cmd == "m" 
             movie.title = ask("enter title")
             MovieRenamer::suggestMovies(movie )
+        elsif cmd == "q"
+            exit(0)
+        elsif cmd == "s"
+            return nil
         end
         return movie
     end
