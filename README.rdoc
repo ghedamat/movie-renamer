@@ -38,8 +38,26 @@ You can set the rename pattern creating a .movie-renamer file in your home
 example:
 filename: ($year) - $title - $director
 
+=== Multilanguage support
+Optionally a language for the search can be set in .movie-renamer file
+language: it
 
+all languages supported by imdb are available, simply set the language option to the website .part
+link www.imdb.it -> it
 
+In this case search will return the complete title but then just the title in the selected language will be writed in the filename
+
+Please NOTE that multilanguage support REQUIRES an UTF-8 enabled terminal to work correctly
+
+== Notes on install
+movie-renamer requires ruby1.9 to work correctly
+gem dependencies also includes
+
+    imdb gem
+    htmlentities gem
+    highline gem
+
+also ensure that you have the gem installation path in your $PATH to use the included executables
 
 == Note on Patches/Pull Requests
 You are encouraged to provide help in developing this simple but useful (I hope) application! 
