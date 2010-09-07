@@ -31,16 +31,16 @@ in the folder specified with the -p option
 
 By default Movies are renamed like this:
 
-$year - $director - $title partXX.file_extension
+    $year - $director - $title partXX.file_extension
 
 You can set the rename pattern creating a .movie-renamer file in your home
 
-example:
-filename: ($year) - $title - $director
+    example:
+    filename: ($year) - $title - $director
 
 === Multilanguage support
 Optionally a language for the search can be set in .movie-renamer file
-language: it
+    language: it
 
 all languages supported by imdb are available, simply set the language option to the website .part
 link www.imdb.it -> it
