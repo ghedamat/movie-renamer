@@ -43,6 +43,13 @@ module Imdb
         end
     end
 
+    class Movie
+    def director
+           document.at("h4[text()='Director:'] ~ a").innerHTML.strip.imdb_unescape_html rescue nil
+                 document.search("h4[text()^='Director'] ~ a").map { |link| link.innerHTML.strip.imdb_unescape_html } rescue []
+     end
+     end
+          
 end
 
 module MovieRenamer
