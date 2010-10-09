@@ -69,7 +69,6 @@ module MovieRenamer
 
     if $config['savepath']
         @newpath = File.expand_path($config['savepath'])
-        puts @newpath
     end
 
     class Movie
