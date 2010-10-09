@@ -67,6 +67,11 @@ module MovieRenamer
         @renamepattern = $config['filename']
     end
 
+    if $config['savepath']
+        @newpath = File.expand_path($config['savepath'])
+        puts @newpath
+    end
+
     class Movie
         
         def initialize(filename,opts={})
@@ -141,6 +146,7 @@ module MovieRenamer
         r2 = %r{\s*\[?\(?\s*(x|X)(v|V)(i|I)(d|D)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
         r3 = %r{\s*\[?\(?\s*(d|D)(v|V)(d|D)(r|R)(i|I)(p|P)\s?(-|_)?\s*\)?\]?\s*}
         r = /(#{r1}|#{r2}|#{r3})/
+        filename.gsub!(/-.*/,'')
         filename.gsub(r,'').gsub(/\s?(-|_)\s?/,' ').gsub(/^\s/,'')
     end
 
