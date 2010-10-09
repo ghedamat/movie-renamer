@@ -8,14 +8,14 @@ uses imdb gem to query imdb about current movie trying to obtain useful infos
 
 to see the usage type
 
-$ movie-renamer -h
-Usage: movie-renamer [-i|-s|-f|-h|-p] <folder>
-    Default behavior is -f on current working directory
-    -h, --help                       Display this help
-    -i, --imdb                       Executes a query on imdb on <movie name>
-    -s, --singlemovie FILE           Acts on a single movie file <file name>
-    -f, --folder FOLDER              Acts on whole folder <folder>
-    -p, --path PATH                  path for moving renamed movies default is tmp/ in current working directory 
+    $ movie-renamer -h
+    Usage: movie-renamer [-i|-s|-f|-h|-p] <folder>
+        Default behavior is -f on current working directory
+        -h, --help                       Display this help
+        -i, --imdb                       Executes a query on imdb on <movie name>
+        -s, --singlemovie FILE           Acts on a single movie file <file name>
+        -f, --folder FOLDER              Acts on whole folder <folder>
+        -p, --path PATH                  path for moving renamed movies default is tmp/ in current working directory 
 
 
 == How it works
@@ -35,10 +35,10 @@ By default Movies are renamed like this:
 
 You can set the rename pattern creating a .movie-renamer file in your home
 
-    example:
+example:
     filename: ($year) - $title - $director
 
-=== Multilanguage support
+=== Multilangual support
 Optionally a language for the search can be set in .movie-renamer file
     language: it
 
@@ -48,6 +48,13 @@ link www.imdb.it -> it
 In this case search will return the complete title but then just the title in the selected language will be writed in the filename
 
 Please NOTE that multilanguage support REQUIRES an UTF-8 enabled terminal to work correctly
+
+=== Change default savepath
+    savepath: /home/ghedamat/movies
+
+Setting this variable you can change the default savepath to save in the same path all the renamed movies.
+The behavior is the same as with -p option.
+
 
 == Notes on install
 movie-renamer requires ruby1.9 to work correctly
