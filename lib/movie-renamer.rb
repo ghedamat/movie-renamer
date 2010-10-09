@@ -70,6 +70,8 @@ module MovieRenamer
     if $config['savepath']
         @newpath = File.expand_path($config['savepath'])
     end
+    
+    puts "Renamed movies will be saved in #{@newpath}"
 
     class Movie
         
@@ -139,6 +141,10 @@ module MovieRenamer
         return Movie.new(filename,:title => title)
     end
 
+    def MovieRenamer::parseMovie(filename)
+
+        Movie.new(filename)
+    end
     # attempt to remove the divx part from a filename
     def MovieRenamer::titleExtract(filename)
         r1 = %r{\s*\[?\(?\s*[dD](i|I)(v|V)(x|X)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
@@ -325,7 +331,8 @@ module MovieRenamer
         s = Imdb::Search.new(movie.title) 
         s.movies[0..4].each_with_index do |m,i|
             m.title = coder.decode(m.title)#.encode("iso-8859-1")
-            @output.puts "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
+            out =  "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
+            say(HighLine.new.color(out, :green))
         end
         mt = s.movies[0..4]
         cmd = ask("pick a choice [0..#{(mt.length) -1 }], Manual search, Edit manually, Skip Movie, Quit", ((0...mt.length).to_a.map{ |e| e.to_s} << %w{m e s q}).flatten) 

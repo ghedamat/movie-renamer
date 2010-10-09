@@ -1,6 +1,7 @@
 require 'helper'
 require File.join(File.dirname(__FILE__),'..', 'lib','movie-renamer')
 require 'stringio'
+require 'mocha'
 
 class TestMovieRenamer < Test::Unit::TestCase
     
@@ -98,7 +99,11 @@ class TestMovieRenamer < Test::Unit::TestCase
         assert_equal "ain't a very bad movie son", MovieRenamer::sanitizeInput(input)
     end
 
-   
+    must "parse a movie title" do
+        input = "2010: Odissea Nello Spazio - Stanley Kubrick - 1964.avi"
+        mov = MovieRenamer::Movie.new("test.avi",:title =>"2001: Odissea Nello Spazio",:director=>"Stanley Kubrick",:year=>1964)
+        assert_equal mov, MovieRenamer::parseMovie(input)
+    end
 
 =begin
     # test main loop over folder
