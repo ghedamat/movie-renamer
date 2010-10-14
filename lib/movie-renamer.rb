@@ -44,11 +44,11 @@ module Imdb
     end
 
     class Movie
-    def director
-           document.at("h4[text()='Director:'] ~ a").innerHTML.strip.imdb_unescape_html rescue nil
-                 document.search("h4[text()^='Director'] ~ a").map { |link| link.innerHTML.strip.imdb_unescape_html } rescue []
-     end
-     end
+        def director
+            document.at("h4[text()='Director:'] ~ a").innerHTML.strip.imdb_unescape_html rescue nil
+            document.search("h4[text()^='Director'] ~ a").map { |link| link.innerHTML.strip.imdb_unescape_html } rescue []
+        end
+    end
           
 end
 
@@ -65,6 +65,10 @@ module MovieRenamer
     
     if $config['filename']
         @renamepattern = $config['filename']
+    end
+    
+	if $config['parsepattern']
+        @parsepattern = $config['parsepattern']
     end
 
     if $config['savepath']
@@ -136,14 +140,36 @@ module MovieRenamer
     # returns the movie object
     def MovieRenamer::readMovie(filename)
         # TODO insert logic here
-        filename = File.basename(filename)
-        title =MovieRenamer::titleExtract(File.basename(filename,'.*'))
-        return Movie.new(filename,:title => title)
+        if @parsepattern
+            MovieRenamer::parseMovie(filename)
+        else
+            filename = File.basename(filename)
+            title =MovieRenamer::titleExtract(File.basename(filename,'.*'))
+            return Movie.new(filename,:title => title)
+        end
     end
 
-    def MovieRenamer::parseMovie(filename)
-
-        Movie.new(filename)
+    def MovieRenamer::parseMovie(filename)    
+        filename.gsub!(/(\..+$)/,'')
+        ext = $1
+        @parsepattern = "$title - $director - $year"
+        p = []
+        p << [:year= , @parsepattern =~ /\$year/]
+        p << [:title=, @parsepattern =~ /\$title/]
+        p << [:director=, @parsepattern =~ /\$director/]
+        p.compact!
+        p.sort! { |a, b| a[1]<=> b[1] }
+        newpattern = @parsepattern.gsub(/\$[a-z]+/,'(.+)')
+        #puts %r{#{newpattern}}.inspect
+        m = Movie.new(filename+ ext) #TODO add extensioooonn that was lost        
+        p.each_with_index do |e,i|
+            filename =~ %r{#{newpattern}}
+            m.send e[0], eval("$" +(i+1).to_s)
+        end
+        #m.title = $year
+        #m.director = $director
+        #m.year = $title
+        m
     end
     # attempt to remove the divx part from a filename
     def MovieRenamer::titleExtract(filename)
@@ -151,7 +177,7 @@ module MovieRenamer
         r2 = %r{\s*\[?\(?\s*(x|X)(v|V)(i|I)(d|D)\s?(-|_)?\s?\w+\s*\)?\]?\s*}
         r3 = %r{\s*\[?\(?\s*(d|D)(v|V)(d|D)(r|R)(i|I)(p|P)\s?(-|_)?\s*\)?\]?\s*}
         r = /(#{r1}|#{r2}|#{r3})/
-        filename.gsub!(/-.*/,'')
+        filename.gsub!(/-.*/,'') # XXX takes only first part
         filename.gsub(r,'').gsub(/\s?(-|_)\s?/,' ').gsub(/^\s/,'')
     end
 
@@ -328,7 +354,8 @@ module MovieRenamer
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(movie)
         coder = HTMLEntities.new
-        s = Imdb::Search.new(movie.title) 
+        name = (movie.title + " ").gsub(/\W/,' ').gsub(/\w{,3} /,'')
+        s = Imdb::Search.new(name) 
         s.movies[0..4].each_with_index do |m,i|
             m.title = coder.decode(m.title)#.encode("iso-8859-1")
             out =  "#{i}, #{m.year} - #{m.director.to_s.gsub(/(\[")|("\])/,'')} - #{m.title.gsub(/     .*/,'')}" 
