@@ -169,7 +169,7 @@ module MovieRenamer
         #m.title = $year
         #m.director = $director
         #m.year = $title
-        m
+        return m
     end
     # attempt to remove the divx part from a filename
     def MovieRenamer::titleExtract(filename)
