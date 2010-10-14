@@ -354,7 +354,7 @@ module MovieRenamer
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(movie)
         coder = HTMLEntities.new
-        name = (movie.title + " ").gsub(/\W/,' ').gsub(/(^\w{,3}))|( \w{,3} )/,'').gsub(/\s+/,' ').chomp        
+        name = (movie.title + " ").gsub(/\W/,' ').gsub(/(^\w{,3})|( \w{,3} )/,'').gsub(/\s+/,' ').chomp        
         s = Imdb::Search.new(name) 
         s.movies[0..4].each_with_index do |m,i|
             m.title = coder.decode(m.title)#.encode("iso-8859-1")
