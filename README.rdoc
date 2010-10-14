@@ -55,6 +55,10 @@ Please NOTE that multilanguage support REQUIRES an UTF-8 enabled terminal to wor
 Setting this variable you can change the default savepath to save in the same path all the renamed movies.
 The behavior is the same as with -p option.
 
+=== Add a pattern to parse movie filenames
+If option "parsepattern" is set the pattern is used to parse movie filenames 
+trying to detect $director $artist and $year
+    parsepattern: $year - $director - $title
 
 == Notes on install
 movie-renamer requires ruby1.9 to work correctly

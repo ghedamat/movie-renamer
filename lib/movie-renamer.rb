@@ -100,10 +100,10 @@ module MovieRenamer
         end
 
     end
-
+    
     # setters
     def MovieRenamer::folderPath=(folderpath)
-        @folderpath = folderpath
+        @folderpath = folderpath        
     end
 
     def MovieRenamer::newpath=(newpath)
@@ -152,11 +152,11 @@ module MovieRenamer
     def MovieRenamer::parseMovie(filename)    
         filename.gsub!(/(\..+$)/,'')
         ext = $1
-        @parsepattern = "$title - $director - $year"
+        #@parsepattern = "$title - $director"
         p = []
-        p << [:year= , @parsepattern =~ /\$year/]
-        p << [:title=, @parsepattern =~ /\$title/]
-        p << [:director=, @parsepattern =~ /\$director/]
+        p << [:year= , @parsepattern =~ /\$year/] if @parsepattern =~ /\$year/
+        p << [:title=, @parsepattern =~ /\$title/] if @parsepattern =~ /\$title/
+        p << [:director=, @parsepattern =~ /\$director/] if @parsepattern =~ /\$director/
         p.compact!
         p.sort! { |a, b| a[1]<=> b[1] }
         newpattern = @parsepattern.gsub(/\$[a-z]+/,'(.+)')
@@ -354,7 +354,7 @@ module MovieRenamer
     # makes a query to imdb database
     def MovieRenamer::suggestMovies(movie)
         coder = HTMLEntities.new
-        name = (movie.title + " ").gsub(/\W/,' ').gsub(/\w{,3} /,'')
+        name = (movie.title + " ").gsub(/\W/,' ').gsub(/(^\w{,3}))|( \w{,3} )/,'').gsub(/\s+/,' ').chomp        
         s = Imdb::Search.new(name) 
         s.movies[0..4].each_with_index do |m,i|
             m.title = coder.decode(m.title)#.encode("iso-8859-1")
