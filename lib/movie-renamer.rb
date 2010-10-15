@@ -169,6 +169,8 @@ module MovieRenamer
         #m.title = $year
         #m.director = $director
         #m.year = $title
+        if m.title == nil
+            m.title = MovieRenamer::titleExtract(filename)
         return m
     end
     # attempt to remove the divx part from a filename
