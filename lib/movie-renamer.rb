@@ -9,7 +9,7 @@ require 'htmlentities'
 require 'yaml'
 
 
-VERSION = File.open(File.join(File.dirname(__FILE__), '..', 'VERSION'), 'r') { |f| f.read.strip }
+#VERSION = File.open(File.join(File.dirname(__FILE__), '..', 'VERSION'), 'r') { |f| f.read.strip }
 
 $config = ''
 CONFIGFILE = File.join(File.expand_path(ENV['HOME']), '.movie-renamer')
