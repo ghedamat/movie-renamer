@@ -16,16 +16,6 @@ class TestMovieRenamer < Test::Unit::TestCase
        MovieRenamer::is_a_test = true 
     end
 
-    # test find movies
-    must "find avi movies in the folder" do
-        assert_equal %w{movie1.avi movie2.avi movie3.mkv movie4.mpg}, @movies
-        
-    end
-
-    # test read movie
-    must "create a movie object" do
-       assert_equal MovieRenamer::Movie.new('movie1.avi',title: 'movie1'),MovieRenamer::readMovie(@movies.first)
-    end
     
     # test title extraction
     must "extract a title correctly with bad words in filename" do
@@ -59,40 +49,6 @@ class TestMovieRenamer < Test::Unit::TestCase
         assert_equal "2001 - me - famous.avi",MovieRenamer::newName(movie)
     end
 
-=begin
-    # print movie info check
-    # XXX usless check for now
-    must "print movie info correctly" do 
-        movie = MovieRenamer::Movie.new 'movie1.avi', year: '2001' , director: 'me', title: 'famous'
-        assert MovieRenamer::printMovieInfo(movie)
-
-    end
-
-    # test for ask function movie
-    must "return true on yes input" do
-        provide_input "yes\n"
-        assert MovieRenamer::ask("do you want to edit this movie")
-        expect_output "do you want to edit this movie\n"
-    end
-    
-    must "return false on no input" do
-        provide_input "no\n"
-        assert ! MovieRenamer::ask("do you want to edit this movie")
-        expect_output "do you want to edit this movie\n"
-    end
-     # test edit movie
-    must "edit a movie correctly" do 
-        provide_input "yes\n1984\nOrwell James\nBig Brother\n\nyes\n"
-        assert ! MovieRenamer::editMovie(@movies.first)
-    end
-
-    must "edit a movie correctly testing recursion" do 
-        provide_input "yes\n1984\nOrwell James\nBig Brother\n\nno\nyes\n1984\nOrwell James\nBig Brother\n1\nyes\n"
-        assert ! MovieRenamer::editMovie(@movies.first)
-        #expect_output("wow")
-    end
-
-=end
     # test input sanitize
     must "sanitize input correctly" do
         input = "ain't a very bad movie{}\@# son     "
@@ -105,19 +61,7 @@ class TestMovieRenamer < Test::Unit::TestCase
         assert_equal mov, MovieRenamer::parseMovie(input)
     end
 
-=begin
-    # test main loop over folder
-    must "ask for all movies in folder" do
-       provide_input "no\nno\nno\nno\n" 
-       assert MovieRenamer::folderLoop()
-    end
-    
-    # suggest movies XXX no test here
-    must "suggest a movie list from a movie title" do
-        MovieRenamer::suggestMovies("Kill Bill")
-        #expect_output "wow"
-    end
-=end
+
 
     # helpers
     def provide_input (string)

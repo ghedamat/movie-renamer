@@ -31,8 +31,8 @@ OptionParser.new do |opts|
 
     begin
         opts.parse!(ARGV)
-    rescue OptionParser::ParseError => 
-        warn.message
+    rescue OptionParser::ParseError => message
+        warn message
         puts opts
         exit 1
     end
