@@ -57,7 +57,7 @@ The behavior is the same as with -p option.
 
 === Add a pattern to parse movie filenames
 If option "parsepattern" is set the pattern is used to parse movie filenames 
-trying to detect $director $artist and $year
+trying to detect $director $title and $year
     parsepattern: $year - $director - $title
 
 == Notes on install
