@@ -32,7 +32,7 @@ else
     $language = 'com'
 end
 
-require "movie-renamer/misc"
-require "movie-renamer/movie"
-require "movie-renamer/imdb"
-require "movie-renamer/parse"
+require File.join(File.dirname(__FILE__), "movie-renamer/misc")
+require File.join(File.dirname(__FILE__), "movie-renamer/movie")
+require File.join(File.dirname(__FILE__), "movie-renamer/imdb")
+require File.join(File.dirname(__FILE__), "movie-renamer/parse")
