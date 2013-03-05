@@ -17,6 +17,10 @@ to see the usage type
         -f, --folder FOLDER              Acts on whole folder <folder>
         -p, --path PATH                  path for moving renamed movies default is tmp/ in current working directory 
 
+== NOTE:
+Imdb site recently changed layout hence the imdb gem that movie-renamer uses for the search doesn't give good results anymore
+I don't have the time to fix the imdb gem or change it and use another database but I'm willing to accept pull requests :)
+Sorry for the inconvenience
 
 == How it works
 
